@@ -1,5 +1,5 @@
 import * as React from "react"
-import { Link } from "gatsby"
+import { graphql, Link } from "gatsby"
 import { StaticImage } from "gatsby-plugin-image"
 
 import Layout from "../components/layout"
@@ -69,7 +69,9 @@ const moreLinks = [
 
 const utmParameters = `?utm_source=starter&utm_medium=start-page&utm_campaign=default-starter`
 
-const IndexPage = () => (
+console.log(process.env.API_KEY)
+
+const IndexPage = ({ data }) => (
   <Layout>
     <Seo title="Home" />
     <div className={styles.textCenter}>
@@ -110,6 +112,13 @@ const IndexPage = () => (
         </li>
       ))}
     </ul>
+    <ul>
+      {data.allMicrocmsBlog.edges.map(({ node }) => (
+        <li key={node.blogId}>
+          <Link to={`/blog/${node.blogId}`}>{node.title}</Link>
+        </li>
+      ))}
+    </ul>
     {moreLinks.map((link, i) => (
       <React.Fragment key={link.url}>
         <a href={`${link.url}${utmParameters}`}>{link.text}</a>
@@ -127,3 +136,18 @@ const IndexPage = () => (
 export const Head = () => <Seo title="Home" />
 
 export default IndexPage
+
+export const query = graphql`
+  query {
+    allMicrocmsBlog {
+      edges {
+        node {
+          blogId
+          title
+          body
+          publishedAt
+        }
+      }
+    }
+  }
+`
